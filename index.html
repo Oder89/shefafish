@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şəfa Fish Garden</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fffbf2;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #ff5436;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            font-size: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .category {
+            background: #ff5436;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .category:hover {
+            background: #e03516;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .menu-item {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            width: 220px;
+            transition: transform 0.3s;
+        }
+        .menu-item:hover {
+            transform: scale(1.05);
+        }
+        .menu-item img {
+            width: 100%;
+            border-radius: 15px;
+        }
+        .cart {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+      
+    </style>
+</head>
+<body>
+    <h1>Şəfa Fish Garden</h1>
+    <div class="categories">
+        <div class="category" onclick="filterMenu('All')">Tam menyu</div>
+        <div class="category" onclick="filterMenu('Appetizers')">Balıqlar</div>
+      <div class="category" onclick="filterMenu('Desserts')">Soyuq Qəlyanaltılar</div>
+      <div class="category" onclick="filterMenu('alcoqol')">Spritsiz içkilər</div>  
+      <div class="category" onclick="filterMenu('Qutablar')">Qutablar</div>
+        
+    </div>
+    <div class="menu" id="menu"></div>
+    <div class="cart" id="cart">
+        <h2>Cart</h2>
+      
+        <ul id="cart-items"></ul>
+        <p>Total: $<span id="total">0.00</span></p>
+    </div>
+
+    <script>
+        const menu = [
+            { name: "Kütüm", price: 17, category: "Appetizers", image: "https://monyo.az/uploads/a_1270_20220611163924962523287.jpg" },
+            { name: "Kefal", price: 17, category: "Appetizers", image: "https://monyo.az/uploads/a_1270_202206111640501293454388.jpg" },
+          { name: "Farel", price: 17, category: "Appetizers", image: "https://monyo.az/uploads/a_1270_20220611164237723039468.jpg" },
+            { name: "Sudak", price: 17, category: "Appetizers", image: "https://monyo.az/uploads/a_1270_20220611164350330623327.jpg" },
+          { name: "Çupra-Dorado", price: 4.99, category: "Appetizers", image: "https://monyo.az/uploads/a_1270_20220611164507398131206.jpg" },
+            { name: "Levrek", price: 3.99, category: "Appetizers", image: "https://monyo.az/uploads2/uploads2023-11/a_1270_202311061115371299594203.jpg" },
+            { name: "Dəvə qutabı", price: 1.6, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111649501491646409.jpg" },
+            { name: "Ət qutabı", price: 1.5, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111650121655236592.jpg" },
+            { name: "Qarın qutabı", price: 1.3, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111650451446686829.jpg" },
+          { name: "Pendir qutabı", price: 1.6, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111649501491646409.jpg" },
+            { name: "Göy qutabı", price: 1.5, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111651161514012863.jpg" },
+            { name: "Balqabaq qutabı", price: 1.3, category: "Qutablar", image: "https://monyo.az/uploads/a_1270_202206111650451446686829.jpg" },
+            { name: "Ice Cream", price: 4.49, category: "Desserts", image: "https://via.placeholder.com/200" },
+            { name: "Chocolate Cake", price: 5.49, category: "Desserts", image: "https://via.placeholder.com/200" }
+        ];
+        
+        const menuContainer = document.getElementById("menu");
+        const cartItems = document.getElementById("cart-items");
+        const totalElement = document.getElementById("total");
+        let total = 0;
+
+        function displayMenu(items) {
+            menuContainer.innerHTML = "";
+            items.forEach(item => {
+                const div = document.createElement("div");
+                div.classList.add("menu-item");
+                div.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.price.toFixed(2)} Azn</p>
+                    <button onclick="addToCart('${item.name}', ${item.price})">Əlavə et</button>
+                `;
+                menuContainer.appendChild(div);
+            });
+        }
+
+        function filterMenu(category) {
+            if (category === "All") {
+                displayMenu(menu);
+            } else {
+                displayMenu(menu.filter(item => item.category === category));
+            }
+        }
+
+        function addToCart(name, price) {
+            const li = document.createElement("li");
+            li.textContent = `${name} - $${price.toFixed(2)}`;
+            cartItems.appendChild(li);
+            total += price;
+            totalElement.textContent = total.toFixed(2);
+        }
+
+        displayMenu(menu);
+    </script>
+</body>
+</html>
